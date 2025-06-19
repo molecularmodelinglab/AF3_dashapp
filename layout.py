@@ -1,4 +1,5 @@
 from dash import dcc, html
+import flask
 import dash_bootstrap_components as dbc
 
 ENTITY_TYPES = ["protein", "rna", "dna", "ligand", "ion"]
@@ -143,6 +144,8 @@ def serve_layout():
         "fontWeight": "bold",
     }
     return dbc.Container([
+        dcc.Store(id="uid-store"),
+        html.Div(id='display-uid'),
         html.Div([
             html.Div(
                 dcc.Tabs(
