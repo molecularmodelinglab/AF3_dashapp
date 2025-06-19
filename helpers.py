@@ -58,7 +58,7 @@ def write_and_submit_script(
 
     Returns the Slurm job ID.
     """
-    job_name, timestamp = job_dir.name.rsplit("_")[-2:]
+    job_name, timestamp = job_dir.name.rsplit("/")[-1].rsplit("_", 1)
     # render & write the submission script
     script_text = render_slurm_script(
         job_name,
