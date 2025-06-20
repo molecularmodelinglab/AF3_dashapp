@@ -7,6 +7,7 @@ from subprocess import CalledProcessError
 from dash import dcc, ctx, Input, Output, State, MATCH, ALL, Dash, no_update
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
+from flask import request
 
 from layout import serve_history_table
 from helpers import (
@@ -205,4 +206,23 @@ def register_callbacks(app: Dash):
 
         # send the file to the browser
         return dcc.send_file(str(zip_path))
-        
+
+    @app.callback(
+        Output('uid-store', 'data'),
+        Input('uid-store', 'data'),
+        prevent_initial_call='initial_duplicate'
+    )
+    def fetch_user_uid(stored_data):
+        if stored_data is None:
+            http_uid = request.headers.get('HTTP_UID', 'USER_NOT_FOUND')
+            return {'HTTP_UID': http_uid}
+        return stored_data
+
+    @app.callback(
+        Output('display-uid', 'children'),
+        Input('uid-store', 'data')
+    )
+    def display_uid(uid_data):
+        if uid_data and 'HTTP_UID' in uid_data:
+            return f"You are logged in as: {uid_data['HTTP_UID']}"
+        return "Fetching your HTTP_UID..."
