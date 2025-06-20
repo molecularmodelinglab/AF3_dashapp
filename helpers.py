@@ -1,3 +1,4 @@
+import re
 import json
 from datetime import datetime
 from pathlib import Path
@@ -99,23 +100,38 @@ def list_job_entries(base: Path) -> list[dict]:
     if not base.exists():
         return entries
     
-    for d in sorted(base.iterdir()):
+    for d in base.iterdir():
         if not d.is_dir():
             continue
+
         parts = d.name.rsplit("_", 1)
-        if len(parts) != 2:
-            continue
-        job_name = parts[0]
-        ts = parts[1]
-        ts_readable = datetime.strptime(ts, "%Y%m%dT%H%M%S").strftime("%Y/%m/%d - %H:%M:%S")
+        job_name, ts = parts
+        
         zip_file = d / f"{job_name}_{ts}.zip"
         if not zip_file.exists():
             continue
+
+        user_email = None
+        submit_sh = d / "submit.sh"
+        if submit_sh.is_file():
+            content = submit_sh.read_text()
+            m = re.search(r"--mail-user=([^\s]+)", content)
+            if m:
+                user_email = m.group(1)
+
+        dt = datetime.strptime(ts, "%Y%m%dT%H%M%S")
         entries.append({
-            "name":      job_name,
-            "timestamp": ts_readable,
-            "zip":       str(zip_file)
+            "name": job_name,
+            "timestamp": dt.strftime("%Y/%m/%d - %H:%M:%S"),
+            "email": user_email, 
+            "zip": str(zip_file),
+            "_dt": dt,
         })
+    
+    entries.sort(key=lambda x: x["_dt"], reverse=True)
+    for e in entries:
+        del e["_dt"]
+
     return entries
 
 def build_submission(
