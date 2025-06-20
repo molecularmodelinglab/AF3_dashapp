@@ -1,5 +1,4 @@
 from dash import dcc, html
-import flask
 import dash_bootstrap_components as dbc
 
 ENTITY_TYPES = ["protein", "rna", "dna", "ligand", "ion"]
@@ -70,7 +69,14 @@ def serve_submission_tab():
                 [
                     dbc.Col(dbc.Button("Generate Input JSON", id="generate-json-button", color="info"), width="auto"),
                     dbc.Col(dbc.Button("Submit Job", id="submit-job", color="warning"), width="auto"),
-                    dbc.Col(dbc.Button("Download JSON", id="download-json-button", color="secondary"), width="auto"),
+                    dbc.Col(
+                        dbc.Button(
+                            "Download JSON", id="download-json-button", 
+                            color="secondary", outline=True,
+                            style={"display": "none"},
+                        ), 
+                        width="auto",
+                    ),
                 ],
                 className="mb-3",
             ),
@@ -101,14 +107,16 @@ def serve_submission_tab():
 def serve_history_table(entries):
     """
     Given a list of dicts each having keys:
-      - name:      the job folder name
+      - name: the job folder name
       - timestamp: the TS string
-      - zip:       the absolute path to the .zip file
+      - email: the user email
+      - zip: the absolute path to the .zip file
     return a Dash `dbc.Table` with one row per entry and a Download button.
     """
     header = html.Thead(html.Tr([
         html.Th("Job"),
         html.Th("Time (YYYY/MM/DD - HH:MM:SS)"),
+        html.Th("User Email"),
         html.Th("Download"),
     ]))
 
@@ -118,16 +126,19 @@ def serve_history_table(entries):
             "Download",
             id={"type": "download-history", "index": idx},
             size="sm",
+            color="primary",
+            outline=True,
             className="btn-download",
         )
         rows.append(html.Tr([
             html.Td(e["name"]),
             html.Td(e["timestamp"]),
+            html.Td(e["email"]),
             html.Td(btn),
         ]))
 
     body = html.Tbody(rows)
-    return dbc.Table([header, body], bordered=True, hover=True)
+    return dbc.Table([header, body], bordered=True, hover=True, class_name="text-center align-middle")
 
 def serve_layout():
     tab_style = {
@@ -144,8 +155,15 @@ def serve_layout():
         "fontWeight": "bold",
     }
     return dbc.Container([
-        dcc.Store(id="uid-store"),
-        html.Div(id='display-uid'),
+        html.Link(id="theme-link", rel="stylesheet", href=dbc.themes.LUX),
+        dcc.Store(id="theme-store", data={
+            "light": dbc.themes.LUX,
+            "dark":  dbc.themes.SUPERHERO,
+        }),
+        dbc.Row([
+            dbc.Col(html.Div("Fetching your HTTP_UID...", id="display-uid"), width="auto"),
+            dbc.Col(dbc.Switch(id="theme-switch",label="Dark Mode", value=False), width="auto",),
+        ], style={"marginBottom": "12px"}, justify="between", align="center"),
         html.Div([
             html.Div(
                 dcc.Tabs(
@@ -186,7 +204,8 @@ def serve_layout():
                                     html.H2("Previously Run Jobs", style={"marginTop": "1rem", "textAlign": "center"}),
                                     html.P(
                                         "Below is a list of all previously run jobs. "
-                                        "Click “Download” to retrieve the ZIP of results for that run.",
+                                        "Click “Download” to retrieve the ZIP of results for that run. "
+                                        "Download may take a few seconds to start, thank you for your patience. ",
                                         style={"marginBottom": "1rem"}
                                     ),
                                     html.Div(id="job-history-table"),
@@ -201,8 +220,9 @@ def serve_layout():
             ),
 
             # hidden stores & downloads
+            dcc.Store(id="uid-store"),
             dcc.Store(id="store-history"),
             dcc.Download(id="download-results"),
         ])
-    ], fluid=False, className="pt-4")
+    ], fluid=False, class_name="pt-4")
 

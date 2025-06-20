@@ -8,7 +8,6 @@ from callbacks import register_callbacks
 def create_app(title="AlphaFold 3 Submission"):
     app = dash.Dash(
         __name__,
-        external_stylesheets=[dbc.themes.LUX],
         suppress_callback_exceptions=True,
     )
     app.title = title
@@ -23,6 +22,18 @@ def create_app(title="AlphaFold 3 Submission"):
     return app
 
 app = create_app()
+
+app.clientside_callback(
+    """
+    function(isDark, urls) {
+        // urls is an object: { light: "...lux.css", dark: "...solar.css" }
+        return isDark ? urls.dark : urls.light;
+    }
+    """,
+    dash.Output("theme-link", "href"),
+    dash.Input("theme-switch", "value"),
+    dash.Input("theme-store",  "data")
+)
 
 
 if __name__ == "__main__":

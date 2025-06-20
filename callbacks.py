@@ -7,7 +7,6 @@ from subprocess import CalledProcessError
 from dash import dcc, ctx, Input, Output, State, MATCH, ALL, Dash, no_update
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-from flask import request
 
 from layout import serve_history_table
 from helpers import (
@@ -74,17 +73,17 @@ def register_callbacks(app: Dash):
     @app.callback(
         Output("json-preview-content", "children"),
         Output("json-collapse", "is_open"),
-        Output("store-submission",        "data"),
+        Output("store-submission", "data"),
         Input("generate-json-button", "n_clicks"),
         State("job-name", "value"),
         State({"type": "entity-card", "index": ALL}, "id"),
         State({"type": "entity-type", "index": ALL}, "value"),
         State({"type": "entity-copies", "index": ALL}, "value"),
-        State({"type": "sequence",     "index": ALL}, "value"),
+        State({"type": "sequence", "index": ALL}, "value"),
         State({"type": "ligand-smiles","index": ALL}, "value"),
-        State({"type": "ligand-ccd",   "index": ALL}, "value"),
-        State({"type": "ion-name",     "index": ALL}, "value"),
-        State({"type": "bonded-ids",   "index": ALL}, "value"),
+        State({"type": "ligand-ccd", "index": ALL}, "value"),
+        State({"type": "ion-name", "index": ALL}, "value"),
+        State({"type": "bonded-ids", "index": ALL}, "value"),
         prevent_initial_call=True,
     )
     def generate_json(
@@ -114,6 +113,15 @@ def register_callbacks(app: Dash):
         return json_str, True, submission_dict
 
     @app.callback(
+        Output("download-json-button", "style"),
+        Input("store-submission", "data"),
+    )
+    def toggle_download_button(submission_dict):
+        if submission_dict:
+            return {"display": "inline-block"}
+        return {"display": "none"}
+
+    @app.callback(
         Output("download-json", "data"),
         Input("download-json-button", "n_clicks"),
         State("job-name", "value"),
@@ -127,10 +135,10 @@ def register_callbacks(app: Dash):
     @app.callback(
         Output("job-status", "children"),
         Output("job-status", "is_open"),
-        Input("submit-job",          "n_clicks"),
-        State("job-name",            "value"),
-        State("email",               "value"),
-        State("store-submission",    "data"),
+        Input("submit-job", "n_clicks"),
+        State("job-name", "value"),
+        State("email", "value"),
+        State("store-submission", "data"),
         prevent_initial_call=True,
     )
     def submit_job(n_clicks, job_name, email, submission_dict):
@@ -209,20 +217,15 @@ def register_callbacks(app: Dash):
 
     @app.callback(
         Output('uid-store', 'data'),
-        Input('uid-store', 'data'),
-        prevent_initial_call='initial_duplicate'
+        Input('tabs', 'value'),
+        prevent_initial_call=False
     )
-    def fetch_user_uid(stored_data):
-        if stored_data is None:
-            http_uid = request.headers.get('HTTP_UID', 'USER_NOT_FOUND')
-            return {'HTTP_UID': http_uid}
-        return stored_data
+    def fetch_user_uid(_):
+        return ctx.headers.get('HTTP_UID', 'USER_NOT_FOUND')
 
     @app.callback(
         Output('display-uid', 'children'),
         Input('uid-store', 'data')
     )
-    def display_uid(uid_data):
-        if uid_data and 'HTTP_UID' in uid_data:
-            return f"You are logged in as: {uid_data['HTTP_UID']}"
-        return "Fetching your HTTP_UID..."
+    def display_uid(user_uid):
+        return f"You are logged in as: {user_uid}"
