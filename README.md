@@ -21,8 +21,8 @@ A user-friendly web interface for submitting AlphaFold3 jobs to a Slurm-powered 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/your-org/af3-dashapp.git
-   cd af3-dashapp
+   git clone https://github.com/molecularmodelinglab/AF3_dashapp.git
+   cd AF3_dashapp
    ```
 
 2. **Create a virtual environment**
@@ -38,11 +38,7 @@ A user-friendly web interface for submitting AlphaFold3 jobs to a Slurm-powered 
    pip install -r requirements.txt
    ```
 
-4. **Configure environment (optional)**
-
-   - By default the app writes/job artifacts into `./jobs/`.
-
-5. **Run the app**
+4. **Run the app**
 
    ```bash
    python app.py
