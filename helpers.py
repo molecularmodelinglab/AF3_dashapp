@@ -72,8 +72,9 @@ def write_and_submit_script(
     script_file.write_text(script_text)
 
     # submit the job
+    # NOTE: move --constraint option to the script template once longleaf RHEL9 migration is complete
     result = run(
-        ["sbatch", str(script_file)],
+        ["sbatch", str(script_file), "--constraint=rhel8,cuda-570.86.15"],
         capture_output=True,
         text=True,
         check=True

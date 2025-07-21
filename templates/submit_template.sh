@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name={{JOBNAME}}_{{TIMESTAMP}}
-#SBATCH --partition=tropshalab
+#SBATCH --partition=l40-gpu,tropshalab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=32
 #SBATCH --mem=256GB
 #SBATCH --gres=gpu:1
-#SBATCH --constraint=cuda-570.86.15
 #SBATCH --time=1-00:00:00
 #SBATCH --qos=gpu_access
 #SBATCH --mail-type=ALL
