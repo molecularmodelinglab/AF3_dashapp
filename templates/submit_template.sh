@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name={{JOBNAME}}_{{TIMESTAMP}}
-#SBATCH --partition=l40-gpu,tropshalab
+#SBATCH --partition=l40-gpu
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=32
 #SBATCH --mem=256GB
