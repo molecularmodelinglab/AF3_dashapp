@@ -216,6 +216,7 @@ def serve_layout():
                 ),
                 style={
                     "marginBottom": "16px",
+                    "textAlign": "center",
                 },
             ),
 
