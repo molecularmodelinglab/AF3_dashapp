@@ -15,7 +15,7 @@ hostname
 nvidia-smi
 
 export AF3_INPUT_DIR={{WORKDIR}}
-export AF3_OUTPUT_DIR={{WORKDIR}}/output
+export AF3_OUTPUT_DIR={{WORKDIR}}
 
 # Load Singularity and AF3 resources
 module load singularity
@@ -46,5 +46,5 @@ singularity exec \
 # Package and clean up results
 cd {{WORKDIR}}
 ZIP_NAME="{{JOBNAME}}_{{TIMESTAMP}}.zip"
-zip -r "${ZIP_NAME}" output/{{JOBNAME}}/
-rm -rf output/
+zip -r "${ZIP_NAME}" {{JOBNAME}}/
+rm -rf {{JOBNAME}}/
