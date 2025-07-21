@@ -43,7 +43,7 @@ def serve_entity_card(uid):
             ),
             dbc.CardBody(id={"type": "entity-body", "index": uid}),
         ],
-        className="mb-3",
+        class_name="mb-3",
         id={"type": "entity-card", "index": uid},
     )
 
@@ -57,13 +57,21 @@ def serve_submission_tab():
                     dbc.Col(dbc.Input(id="job-name", placeholder="Job name", type="text"), width=4),
                     dbc.Col(dbc.Input(id="email", placeholder="Your email", type="email"), width=4),
                 ],
-                className="mb-3",
+                class_name="mb-3",
             ),
             
             # entity cards
             html.Div(id="entity-list", children=[]),
-            dbc.Button("+ Add Entity", id="add-entity-button", n_clicks=0, color="success", className="my-3"),
-            
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dbc.Button("+ Add Entity", id="add-entity-button", n_clicks=0, color="success"),
+                        width="auto",
+                    ),
+                ],
+                class_name="mb-3",
+            ),
+
             # submit buttons
             dbc.Row(
                 [
@@ -78,7 +86,7 @@ def serve_submission_tab():
                         width="auto",
                     ),
                 ],
-                className="mb-3",
+                class_name="mb-3",
             ),
 
             # hidden stores for data passing
@@ -128,7 +136,7 @@ def serve_history_table(entries):
             size="sm",
             color="primary",
             outline=True,
-            className="btn-download",
+            class_name="btn-download",
         )
         rows.append(html.Tr([
             html.Td(e["name"]),
@@ -216,6 +224,7 @@ def serve_layout():
                 ),
                 style={
                     "marginBottom": "16px",
+                    "textAlign": "center",
                 },
             ),
 
