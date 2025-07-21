@@ -98,7 +98,7 @@ def serve_submission_tab():
                 dbc.Card(
                     [
                         dbc.CardHeader("Preview AF3 Input JSON"),
-                        dbc.CardBody(html.Pre(id="json-preview-content", style={"whiteSpace": "pre-wrap"})),
+                        dbc.CardBody(html.Pre(id="json-preview-content", style={"whiteSpace": "pre-wrap", "textAlign": "left"})),
                     ]
                 ),
                 id="json-collapse",
