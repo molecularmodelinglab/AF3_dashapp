@@ -100,8 +100,8 @@ def serve_submission_tab():
             # job status alert
             dbc.Alert(id="job-status", is_open=False, color="danger"),
         ],
-        style={"maxWidth": "960px", "margin": "auto"},
-        fluid=True,
+        style={"margin": "auto", "maxWidth": "960px"},
+        fluid=False,
     )
 
 def serve_history_table(entries):
